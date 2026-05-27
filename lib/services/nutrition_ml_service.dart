@@ -7,8 +7,11 @@ class NutritionMLService {
   NutritionInsight analyze({
     required NutritionProfile profile,
     required List<Meal> savedMeals,
+    bool useSampleWhenEmpty = true,
   }) {
-    final meals = savedMeals.isEmpty ? _sampleMeals(profile) : savedMeals;
+    final meals = savedMeals.isEmpty && useSampleWhenEmpty
+        ? _sampleMeals(profile)
+        : savedMeals;
     final baseDaily = meals.fold<int>(0, (sum, meal) => sum + meal.calories);
     final activityAdjustment = switch (profile.activityLevel) {
       'Sedentary' => -150,
@@ -68,6 +71,9 @@ class NutritionMLService {
     });
 
     final warnings = <String>[];
+    if (savedMeals.isEmpty && !useSampleWhenEmpty) {
+      warnings.add('Belum ada menu di Meal Planner minggu ini.');
+    }
     if (calorieDelta > 250) warnings.add('Overeating terdeteksi minggu ini.');
     if (profile.sleepDuration < 6) warnings.add('Durasi tidur masih rendah.');
     if (profile.dailyWaterIntake < 1.8) warnings.add('Asupan air belum ideal.');
@@ -79,10 +85,10 @@ class NutritionMLService {
         profile.goalType == 'Weight Loss') {
       warnings.add('Target weight lebih tinggi dari berat saat ini.');
     }
-    if (_likelyLowProtein(meals, profile)) {
+    if (meals.isNotEmpty && _likelyLowProtein(meals, profile)) {
       warnings.add('Protein tampak kurang untuk goal kamu.');
     }
-    if (_likelyHighSugar(meals)) {
+    if (meals.isNotEmpty && _likelyHighSugar(meals)) {
       warnings.add('Pola gula/snack manis perlu dikurangi.');
     }
     if (warnings.isEmpty) warnings.add('Pola makan cukup stabil minggu ini.');

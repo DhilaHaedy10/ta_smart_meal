@@ -131,11 +131,18 @@ Kalau data belum cukup, bilang data apa yang perlu ditambah dan tetap beri saran
 ''';
 
     final provider = _provider.toLowerCase();
-    final answer = provider == 'openrouter'
-        ? await _chatOpenRouter(context, recentHistory)
-        : await _chatGemini(context, recentHistory);
-    return answer ??
-        _localChatAnswer(question: question, insightSummary: insightSummary);
+    final attempts = provider == 'openrouter'
+        ? [_chatOpenRouter, _chatGemini]
+        : [_chatGemini, _chatOpenRouter];
+
+    for (final attempt in attempts) {
+      final answer = await attempt(context, recentHistory);
+      if (answer != null && answer.trim().isNotEmpty) {
+        return answer;
+      }
+    }
+
+    return _localChatAnswer(question: question, insightSummary: insightSummary);
   }
 
   bool _isNutritionScope(String question) {
@@ -355,12 +362,7 @@ Kalau data belum cukup, bilang data apa yang perlu ditambah dan tetap beri saran
       if (response.statusCode != 200) {
         debugPrint(
             'Gemini chat error ${response.statusCode}: ${response.body}');
-        if (response.statusCode == 429) {
-          return 'Gemini API lagi kena limit/kuota (429 Too Many Requests), jadi AI asli belum bisa menjawab sekarang. Coba tunggu beberapa menit, pakai API key/project lain, atau aktifkan billing/cek quota Gemini.';
-        }
-        if (response.statusCode == 400 || response.statusCode == 403) {
-          return 'Gemini API belum bisa dipakai. Cek API key, model Gemini, dan permission project di Google AI Studio.';
-        }
+        debugPrint(_readGeminiError(response.statusCode, response.body));
         return null;
       }
       final data = jsonDecode(response.body) as Map<String, dynamic>;

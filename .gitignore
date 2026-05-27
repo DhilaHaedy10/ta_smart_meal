@@ -51,3 +51,4 @@ app.*.map.json
 /android/build/
 .dart_tool/
 .gradle/
+android/.kotlin/

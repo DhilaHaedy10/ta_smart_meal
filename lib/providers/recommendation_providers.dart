@@ -7,6 +7,7 @@ import '../models/nutrition_chat_message.dart';
 import '../models/nutrition_insight.dart';
 import '../models/nutrition_profile.dart';
 import '../services/ai_service.dart';
+import '../services/auth_service.dart';
 import '../services/meal_storage_service.dart';
 import '../services/nutrition_ml_service.dart';
 
@@ -16,6 +17,7 @@ class RecommendationProvider with ChangeNotifier {
   static const _recommendationsKey = 'nutrition_assistant_recommendations';
 
   final AIService _aiService = AIService();
+  final AuthService _authService = AuthService();
   final MealStorageService _mealStorage = MealStorageService();
   final NutritionMLService _mlService = NutritionMLService();
   List<Meal> _recommendedMeals = [];
@@ -40,19 +42,21 @@ class RecommendationProvider with ChangeNotifier {
   Future<NutritionProfile?> loadPersistedState() async {
     final prefs = await SharedPreferences.getInstance();
     _savedMeals = await _mealStorage.getSavedMeals();
+    _recommendedMeals = [];
+    _weeklyPlan = [];
+    _chatHistory = [];
+    _insight = null;
+    _lastProfile = null;
 
-    final profileRaw = prefs.getString(_profileKey);
+    final profileRaw = prefs.getString(await _userScopedKey(_profileKey));
     if (profileRaw != null && profileRaw.isNotEmpty) {
       _lastProfile = NutritionProfile.fromJson(
         Map<String, dynamic>.from(jsonDecode(profileRaw) as Map),
       );
-      _insight = _mlService.analyze(
-        profile: _lastProfile!,
-        savedMeals: _savedMeals,
-      );
+      await _refreshPlannerInsight(_lastProfile!);
     }
 
-    final chatRaw = prefs.getString(_chatKey);
+    final chatRaw = prefs.getString(await _userScopedKey(_chatKey));
     if (chatRaw != null && chatRaw.isNotEmpty) {
       final decoded = jsonDecode(chatRaw) as List;
       _chatHistory = decoded
@@ -62,7 +66,7 @@ class RecommendationProvider with ChangeNotifier {
           .toList();
     }
 
-    final recRaw = prefs.getString(_recommendationsKey);
+    final recRaw = prefs.getString(await _userScopedKey(_recommendationsKey));
     if (recRaw != null && recRaw.isNotEmpty) {
       final decoded = jsonDecode(recRaw) as List;
       _recommendedMeals = decoded
@@ -85,10 +89,11 @@ class RecommendationProvider with ChangeNotifier {
 
     try {
       _savedMeals = await _mealStorage.getSavedMeals();
-      _insight = _mlService.analyze(profile: profile, savedMeals: _savedMeals);
+      await _refreshPlannerInsight(profile);
       _recommendedMeals = await _aiService.getSmartRecommendations(
         profile: profile,
-        contextSummary: _buildContextSummary(),
+        contextSummary:
+            'Gunakan Nutrition Profile terbaru sebagai dasar utama rekomendasi.',
         avoidMeals: _savedMeals,
       );
       await _persistRecommendations();
@@ -106,8 +111,7 @@ class RecommendationProvider with ChangeNotifier {
   Future<void> refreshInsight(NutritionProfile profile) async {
     _lastProfile = profile;
     await _persistProfile(profile);
-    _savedMeals = await _mealStorage.getSavedMeals();
-    _insight = _mlService.analyze(profile: profile, savedMeals: _savedMeals);
+    await _refreshPlannerInsight(profile);
     notifyListeners();
   }
 
@@ -159,7 +163,7 @@ class RecommendationProvider with ChangeNotifier {
     notifyListeners();
 
     _savedMeals = await _mealStorage.getSavedMeals();
-    _insight ??= _mlService.analyze(profile: profile, savedMeals: _savedMeals);
+    _insight ??= await _buildPlannerInsight(profile);
     final answer = await _aiService.askNutritionAssistant(
       profile: profile,
       meals: _savedMeals,
@@ -183,21 +187,43 @@ class RecommendationProvider with ChangeNotifier {
 
   Future<void> _persistProfile(NutritionProfile profile) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_profileKey, jsonEncode(profile.toJson()));
+    await prefs.setString(
+      await _userScopedKey(_profileKey),
+      jsonEncode(profile.toJson()),
+    );
+  }
+
+  Future<void> _refreshPlannerInsight(NutritionProfile profile) async {
+    _insight = await _buildPlannerInsight(profile);
+  }
+
+  Future<NutritionInsight> _buildPlannerInsight(NutritionProfile profile) async {
+    final plannerMeals = await _mealStorage.getCurrentWeekPlannerMeals();
+    return _mlService.analyze(
+      profile: profile,
+      savedMeals: plannerMeals,
+      useSampleWhenEmpty: false,
+    );
   }
 
   Future<void> _persistChat() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
-      _chatKey,
+      await _userScopedKey(_chatKey),
       jsonEncode(_chatHistory.map((message) => message.toJson()).toList()),
     );
+  }
+
+  Future<String> _userScopedKey(String baseKey) async {
+    final userId = await _authService.getUserId();
+    final suffix = userId?.trim().isNotEmpty == true ? userId!.trim() : 'guest';
+    return '${baseKey}_$suffix';
   }
 
   Future<void> _persistRecommendations() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
-      _recommendationsKey,
+      await _userScopedKey(_recommendationsKey),
       jsonEncode(_recommendedMeals.map((meal) => meal.toJson()).toList()),
     );
   }

@@ -2,14 +2,16 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/meal.dart';
+import 'auth_service.dart';
 
 class MealStorageService {
   static const _savedMealsKey = 'saved_ai_meals';
   static const _plannerKey = 'meal_planner_store';
+  final AuthService _authService = AuthService();
 
   Future<List<Meal>> getSavedMeals() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_savedMealsKey);
+    final raw = prefs.getString(await _userScopedKey(_savedMealsKey));
     if (raw == null || raw.isEmpty) return [];
 
     final decoded = jsonDecode(raw) as List;
@@ -34,13 +36,13 @@ class MealStorageService {
 
   Future<void> _saveMeals(List<Meal> meals) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_savedMealsKey,
+    await prefs.setString(await _userScopedKey(_savedMealsKey),
         jsonEncode(meals.map((meal) => meal.toJson()).toList()));
   }
 
   Future<Map<String, Map<String, dynamic>>> getPlannerStore() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_plannerKey);
+    final raw = prefs.getString(await _userScopedKey(_plannerKey));
     if (raw == null || raw.isEmpty) return {};
 
     final decoded = jsonDecode(raw) as Map<String, dynamic>;
@@ -59,7 +61,55 @@ class MealStorageService {
 
   Future<void> savePlannerStore(Map<String, Map<String, dynamic>> store) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_plannerKey, jsonEncode(store));
+    await prefs.setString(await _userScopedKey(_plannerKey), jsonEncode(store));
+  }
+
+  Future<String> _userScopedKey(String baseKey) async {
+    final userId = await _authService.getUserId();
+    final suffix = userId?.trim().isNotEmpty == true ? userId!.trim() : 'guest';
+    return '${baseKey}_$suffix';
+  }
+
+  Future<List<Meal>> getCurrentWeekPlannerMeals({DateTime? weekStart}) async {
+    final store = await getPlannerStore();
+    final start = weekStart ?? _startOfCurrentWeek();
+    final meals = <Meal>[];
+
+    for (var day = 0; day < 7; day++) {
+      final dateKey =
+          DateFormat('yyyy-MM-dd').format(start.add(Duration(days: day)));
+      final dayMeals = store[dateKey];
+      if (dayMeals == null) continue;
+
+      for (final type in ['Breakfast', 'Lunch', 'Dinner']) {
+        final rawMeal = dayMeals[type];
+        if (rawMeal is! Map) continue;
+
+        final plannerMeal =
+            _normalizePlannerMeal(Map<String, dynamic>.from(rawMeal));
+        final name = plannerMeal['nama']?.toString().trim() ?? '';
+        if (name.isEmpty) continue;
+
+        meals.add(
+          Meal(
+            id: plannerMeal['id']?.toString() ?? '$dateKey-$type-$name',
+            name: name,
+            description: plannerMeal['description']?.toString() ?? '',
+            price: _normalizePrice(_number(plannerMeal['harga']).toDouble()),
+            calories: _number(plannerMeal['cal']).toInt(),
+            dietType: plannerMeal['dietType']?.toString() ?? '',
+            imageUrl: _safeImageUrl(plannerMeal['image_url']?.toString() ?? ''),
+            matchPercentage:
+                _number(plannerMeal['matchPercentage'], fallback: 100).toInt(),
+            ingredients: _stringList(plannerMeal['ingredients']),
+            steps: _stringList(plannerMeal['steps']),
+            mealTime: type,
+          ),
+        );
+      }
+    }
+
+    return meals;
   }
 
   Future<int> applyMealsToFirstEmptySlots(List<Meal> meals,
@@ -157,9 +207,18 @@ class MealStorageService {
   }
 
   Map<String, dynamic> _normalizePlannerMeal(Map<String, dynamic> meal) {
-    meal['harga'] = _normalizePrice((meal['harga'] as num?)?.toDouble() ?? 0);
+    meal['harga'] = _normalizePrice(_number(meal['harga']).toDouble());
     meal['image_url'] = _safeImageUrl(meal['image_url']?.toString() ?? '');
     return meal;
+  }
+
+  num _number(dynamic value, {num fallback = 0}) {
+    if (value is num) return value;
+    if (value is String) {
+      return num.tryParse(value.replaceAll(RegExp(r'[^0-9.]'), '')) ??
+          fallback;
+    }
+    return fallback;
   }
 
   double _normalizePrice(double price) {
@@ -171,6 +230,23 @@ class MealStorageService {
     final trimmed = url.trim();
     if (trimmed.isEmpty || trimmed.contains('example.com')) return '';
     return trimmed;
+  }
+
+  List<String> _stringList(dynamic value) {
+    if (value is List) {
+      return value
+          .map((item) => item.toString())
+          .where((item) => item.trim().isNotEmpty)
+          .toList();
+    }
+    if (value is String && value.trim().isNotEmpty) {
+      return value
+          .split(RegExp(r'[.;\n]'))
+          .map((item) => item.trim())
+          .where((item) => item.isNotEmpty)
+          .toList();
+    }
+    return [];
   }
 
   DateTime _startOfCurrentWeek() {

@@ -100,13 +100,39 @@ class _BudgetPageState extends State<BudgetPage> {
 
   DateTime _nowForSelectedTimeZone() {
     final utc = DateTime.now().toUtc();
+    return _convertUtcToSelectedTimeZone(utc);
+  }
+
+  DateTime _convertUtcToSelectedTimeZone(DateTime utcDateTime) {
     final offsetHours = switch (_selectedTimeZone) {
       'WITA' => 8,
       'WIT' => 9,
       'London' => 1,
       _ => 7,
     };
-    return utc.add(Duration(hours: offsetHours));
+    return utcDateTime.toUtc().add(Duration(hours: offsetHours));
+  }
+
+  DateTime _expenseDateTimeForDisplay(String value) {
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return DateTime.now();
+    if (value.contains('T') || parsed.isUtc) {
+      return _convertUtcToSelectedTimeZone(parsed);
+    }
+    return parsed;
+  }
+
+  String _formatExpenseDate(String value) {
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return value;
+    return DateFormat('dd MMM yyyy').format(_expenseDateTimeForDisplay(value));
+  }
+
+  String _formatExpenseTime(String value) {
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null || !value.contains(':')) return 'Jam belum tercatat';
+    final time = DateFormat('HH:mm').format(_expenseDateTimeForDisplay(value));
+    return '$time $_selectedTimeZone';
   }
 
   @override
@@ -462,9 +488,15 @@ class _BudgetPageState extends State<BudgetPage> {
                           Text(item.name,
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16)),
-                          Text("${item.date} • ${item.category}",
+                          Text(
+                              "${_formatExpenseDate(item.date)} • ${item.category}",
                               style: const TextStyle(
                                   color: Colors.grey, fontSize: 12)),
+                          const SizedBox(height: 3),
+                          Text("Dibeli ${_formatExpenseTime(item.date)}",
+                              style: TextStyle(
+                                  color: Colors.blueGrey.shade600,
+                                  fontSize: 12)),
                         ],
                       ),
                     ),
@@ -517,37 +549,29 @@ class _BudgetPageState extends State<BudgetPage> {
                       icon: const Icon(Icons.edit_outlined, size: 18),
                       label: const Text("Edit"),
                     ),
-                    const SizedBox(width: 8),
-
-                    // TOMBOL TAMBAH/HAPUS MINGGUAN
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isWeekly
-                            ? Colors.orange.shade400
-                            : Colors.blue.shade600,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        elevation: 0,
-                      ),
-                      onPressed: () async {
-                        if (isWeekly) {
-                          await prov.removeFromWeeklyList(
-                              item.id, item.price, widget.userId);
-                        } else {
+                    if (!isWeekly) ...[
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue.shade600,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          elevation: 0,
+                        ),
+                        onPressed: () async {
                           final success = await prov.addToWeeklyList(
                               item.id, item.price, widget.userId);
                           if (!context.mounted) return;
                           if (!success) {
                             _showBudgetError(context, prov);
                           }
-                        }
-                      },
-                      child: Text(
-                        isWeekly ? "Batal" : "Tambah ke Minggu Ini",
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 11),
+                        },
+                        child: const Text(
+                          "Tambah ke Minggu Ini",
+                          style: TextStyle(color: Colors.white, fontSize: 11),
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 )
               ],
@@ -608,8 +632,7 @@ class _BudgetPageState extends State<BudgetPage> {
                     name: nameCtrl.text,
                     category: category,
                     price: price,
-                    date: DateFormat('yyyy-MM-dd')
-                        .format(_nowForSelectedTimeZone()),
+                    date: DateTime.now().toUtc().toIso8601String(),
                     userId: userId,
                     isWeekly: 1,
                   );

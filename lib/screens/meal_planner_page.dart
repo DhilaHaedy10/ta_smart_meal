@@ -285,21 +285,6 @@ class _MealPlannerPageState extends State<MealPlannerPage> {
       appBar: AppBar(
         title: const Text("Meal Planner",
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-        actions: [
-          IconButton(
-              tooltip: _tiltNavigationEnabled
-                  ? "Matikan tilt navigation"
-                  : "Aktifkan tilt navigation",
-              icon: Icon(
-                Icons.screen_rotation_alt,
-                color:
-                    _tiltNavigationEnabled ? Colors.yellowAccent : Colors.white,
-              ),
-              onPressed: _toggleTiltNavigation),
-          IconButton(
-              icon: const Icon(Icons.sync, color: Colors.white),
-              onPressed: _loadUserPreferences)
-        ],
         flexibleSpace: Container(
             decoration: const BoxDecoration(
                 gradient: LinearGradient(
