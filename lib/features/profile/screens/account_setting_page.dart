@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../services/database_service.dart';
-import '../services/auth_service.dart';
-import '../services/encryption_service.dart'; // Import service enkripsi kamu
+import 'package:smart_meal_ta/core/services/database_service.dart';
+import 'package:smart_meal_ta/core/services/auth_service.dart';
+import 'package:smart_meal_ta/core/services/encryption_service.dart'; // Import service enkripsi kamu
 
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({super.key});

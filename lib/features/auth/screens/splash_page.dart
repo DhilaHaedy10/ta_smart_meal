@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
+import 'package:smart_meal_ta/core/services/auth_service.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

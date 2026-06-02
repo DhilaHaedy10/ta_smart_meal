@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import '../models/meal.dart';
-import '../models/nutrition_chat_message.dart';
-import '../models/nutrition_profile.dart';
+import 'package:smart_meal_ta/shared/models/meal.dart';
+import 'package:smart_meal_ta/shared/models/nutrition_chat_message.dart';
+import 'package:smart_meal_ta/shared/models/nutrition_profile.dart';
 
 class AIService {
   String get _provider => dotenv.get('AI_PROVIDER', fallback: 'gemini');

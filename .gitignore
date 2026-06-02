@@ -52,3 +52,6 @@ app.*.map.json
 .dart_tool/
 .gradle/
 android/.kotlin/
+
+# Node.js backend dependencies
+backend/server/node_modules/

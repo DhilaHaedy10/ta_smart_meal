@@ -14,37 +14,37 @@ dependencies:
   google_maps_flutter: ^2.5.3
   google_maps_webservice: ^0.0.20-nullsafety.5
   # --- State Management ---
-  # Digunakan di folder /providers
+  # Digunakan di folder features/*/providers
   provider: ^6.1.2
 
   # --- Database & Storage ---
-  # Digunakan di /services/database_service.dart
+  # Digunakan di core/services/database_service.dart
   sqflite: ^2.3.0
   path: ^1.8.3
   # Untuk menangani Session & Token secara aman
   flutter_secure_storage: ^9.0.0
 
   # --- Networking & AI ---
-  # Digunakan di /services/api_service.dart dan /services/ai_service.dart
+  # Digunakan di core/services/api_service.dart dan core/services/ai_service.dart
   http: ^0.13.3
   dio: ^5.4.1
   # yey# Library LLM Gemini
 
   # --- Security & Auth ---
-  # Digunakan di /services/auth_service.dart dan /services/encryption_service.dart
+  # Digunakan di core/services/auth_service.dart dan core/services/encryption_service.dart
   local_auth: ^2.1.6 # Login Biometric
   shared_preferences: ^2.2.0
   crypto: ^3.0.3     # Enkripsi manual (SHA-256)
 
   # --- Location Based Services (LBS) ---
-  # Digunakan di /services/location_service.dart
+  # Digunakan di features/location/services/location_service.dart
   geolocator: ^11.0.0
   # google_maps_flutter: ^2.5.3
 
   flutter_local_notifications: ^17.0.0
 
   # --- Sensors ---
-  # Digunakan di /services/sensor_service.dart (Shake/Accelerometer)
+  # Digunakan di core/services/sensor_service.dart (Shake/Accelerometer)
   sensors_plus: ^4.0.2
 
   # --- Utilities & Configuration ---
@@ -54,11 +54,11 @@ dependencies:
   intl: ^0.19.0
   timezone: ^0.9.4
   fl_chart: ^1.2.0
-  # Untuk ambil foto profil di /screens/profile_page.dart
+  # Untuk ambil foto profil di features/profile/screens/profile_page.dart
   image_picker: ^1.0.7
 
   # --- Game Engine ---
-  # Digunakan di folder /game
+  # Digunakan di features/game
   flame: ^1.14.0
   url_launcher: ^6.3.2
 

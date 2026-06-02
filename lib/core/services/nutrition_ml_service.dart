@@ -1,7 +1,7 @@
 import 'dart:math';
-import '../models/meal.dart';
-import '../models/nutrition_insight.dart';
-import '../models/nutrition_profile.dart';
+import 'package:smart_meal_ta/shared/models/meal.dart';
+import 'package:smart_meal_ta/shared/models/nutrition_insight.dart';
+import 'package:smart_meal_ta/shared/models/nutrition_profile.dart';
 
 class NutritionMLService {
   NutritionInsight analyze({

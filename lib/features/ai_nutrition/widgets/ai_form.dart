@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/ai_nutrition_provider.dart';
-import '../../../services/notification_service.dart';
+import 'package:smart_meal_ta/core/services/notification_service.dart';
 
 class AiForm extends StatefulWidget {
   const AiForm({super.key});

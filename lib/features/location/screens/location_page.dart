@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart'; // Jalankan: flutter pub add url_launcher
-import '../services/location_service.dart';
+import 'package:smart_meal_ta/features/location/services/location_service.dart';
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key});

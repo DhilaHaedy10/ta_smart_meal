@@ -19,10 +19,13 @@ samples, guidance on mobile development, and a full API reference.
 ## Backend API Proxy
 This project includes a small backend proxy to call the Gemini API securely.
 
+## Project Structure
+The Flutter app is organized with a feature-first structure. See `docs/PROJECT_STRUCTURE.md` for the folder explanation.
+
 ### Setup
 1. Navigate to the backend folder:
    ```powershell
-   cd "D:\Materi Semester 6\ta_smart_meal\backend\server"
+   cd backend/server
    ```
 2. Install dependencies:
    ```powershell

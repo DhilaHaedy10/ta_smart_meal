@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/meal.dart';
+import 'package:smart_meal_ta/shared/models/meal.dart';
 import 'auth_service.dart';
 
 class MealStorageService {

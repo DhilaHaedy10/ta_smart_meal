@@ -6,8 +6,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../providers/budget_providers.dart';
-import '../models/expense.dart';
-import 'location_page.dart'; // Pastikan import ini ada
+import 'package:smart_meal_ta/shared/models/expense.dart';
+import 'package:smart_meal_ta/features/location/screens/location_page.dart';
 
 class BudgetPage extends StatefulWidget {
   final int userId;

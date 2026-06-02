@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'profile_page.dart';
-import 'meal_planner_page.dart';
-import 'budget_page.dart';
-import 'ai_recommendation_page.dart';
-import 'game_page.dart';
-import '../services/auth_service.dart';
+import 'package:smart_meal_ta/features/ai_recommendation/screens/ai_recommendation_page.dart';
+import 'package:smart_meal_ta/features/budget/screens/budget_page.dart';
+import 'package:smart_meal_ta/features/game/screens/game_page.dart';
+import 'package:smart_meal_ta/features/meal_planner/screens/meal_planner_page.dart';
+import 'package:smart_meal_ta/features/profile/screens/profile_page.dart';
+import 'package:smart_meal_ta/core/services/auth_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

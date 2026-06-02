@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/budget.dart';
-import '../models/expense.dart';
-import '../services/database_service.dart';
-import '../services/notification_service.dart';
+import 'package:smart_meal_ta/shared/models/budget.dart';
+import 'package:smart_meal_ta/shared/models/expense.dart';
+import 'package:smart_meal_ta/core/services/database_service.dart';
+import 'package:smart_meal_ta/core/services/notification_service.dart';
 
 class BudgetProvider with ChangeNotifier {
   double _weeklyLimit = 0.0;

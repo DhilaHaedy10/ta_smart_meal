@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'feedback_page.dart';
-import '../services/auth_service.dart';
-import '../services/database_service.dart';
+import 'package:smart_meal_ta/core/services/auth_service.dart';
+import 'package:smart_meal_ta/core/services/database_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

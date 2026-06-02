@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../services/database_service.dart';
-import '../services/auth_service.dart';
+import 'package:smart_meal_ta/core/services/database_service.dart';
+import 'package:smart_meal_ta/core/services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {

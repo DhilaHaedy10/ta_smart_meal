@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:smart_meal_ta/providers/budget_providers.dart';
-import 'package:smart_meal_ta/providers/recommendation_providers.dart';
+import 'package:smart_meal_ta/features/budget/providers/budget_providers.dart';
+import 'package:smart_meal_ta/features/ai_recommendation/providers/recommendation_providers.dart';
 
 // Import Services
-import 'services/database_service.dart';
-import 'services/notification_service.dart';
+import 'package:smart_meal_ta/core/services/database_service.dart';
+import 'package:smart_meal_ta/core/services/notification_service.dart';
 // Import Providers
-import 'providers/login_providers.dart';
+import 'package:smart_meal_ta/features/auth/providers/login_providers.dart';
 
 // Import Screens
-import 'screens/login_page.dart';
-import 'screens/home_page.dart';
-import 'screens/account_setting_page.dart';
-import 'screens/register_page.dart';
-import 'screens/feedback_page.dart';
-import 'screens/splash_page.dart';
-import 'features/ai_nutrition/screens/ai_nutrition_screen.dart';
-import 'features/ai_nutrition/providers/ai_nutrition_provider.dart';
+import 'package:smart_meal_ta/features/auth/screens/login_page.dart';
+import 'package:smart_meal_ta/features/home/screens/home_page.dart';
+import 'package:smart_meal_ta/features/profile/screens/account_setting_page.dart';
+import 'package:smart_meal_ta/features/auth/screens/register_page.dart';
+import 'package:smart_meal_ta/features/profile/screens/feedback_page.dart';
+import 'package:smart_meal_ta/features/auth/screens/splash_page.dart';
+import 'package:smart_meal_ta/features/ai_nutrition/screens/ai_nutrition_screen.dart';
+import 'package:smart_meal_ta/features/ai_nutrition/providers/ai_nutrition_provider.dart';
 
 Future<void> main() async {
   // 1. WAJIB: Pastikan binding mesin Flutter sudah siap sebelum akses plugin (Native)

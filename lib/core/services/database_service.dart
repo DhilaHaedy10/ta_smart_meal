@@ -1,10 +1,10 @@
-import 'package:smart_meal_ta/models/meal.dart';
+import 'package:smart_meal_ta/shared/models/meal.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import '../models/budget.dart';
-import '../models/expense.dart';
+import 'package:smart_meal_ta/shared/models/budget.dart';
+import 'package:smart_meal_ta/shared/models/expense.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();

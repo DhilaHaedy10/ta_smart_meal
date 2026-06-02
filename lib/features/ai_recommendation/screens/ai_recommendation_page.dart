@@ -4,9 +4,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../models/meal.dart';
-import '../models/nutrition_insight.dart';
-import '../models/nutrition_profile.dart';
+import 'package:smart_meal_ta/shared/models/meal.dart';
+import 'package:smart_meal_ta/shared/models/nutrition_insight.dart';
+import 'package:smart_meal_ta/shared/models/nutrition_profile.dart';
 import '../providers/recommendation_providers.dart';
 
 class SaranMenuPage extends StatefulWidget {

@@ -4,8 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/auth_service.dart';
-import '../services/database_service.dart';
+import 'package:smart_meal_ta/core/services/auth_service.dart';
+import 'package:smart_meal_ta/core/services/database_service.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -21,6 +21,7 @@ class _GamePageState extends State<GamePage> {
   Timer? _gameTimer;
 
   double _basketX = 0.5;
+  double _smoothedTiltX = 0;
   int _score = 0;
   int _bestScore = 0;
   int _timeLeft = 45;
@@ -28,6 +29,11 @@ class _GamePageState extends State<GamePage> {
   bool _isRunning = false;
   String _playerName = 'Kamu';
   List<_ScoreRow> _scoreHistory = [];
+
+  static const double _tiltDeadZone = 0.45;
+  static const double _tiltSensitivity = 0.006;
+  static const double _tiltSmoothing = 0.25;
+  static const double _maxTiltStep = 0.018;
 
   static const List<_FoodTemplate> _healthyFoods = [
     _FoodTemplate(Icons.eco, 'Sayur', true),
@@ -108,8 +114,16 @@ class _GamePageState extends State<GamePage> {
   void _startAccelerometer() {
     _accelerometerSubscription = accelerometerEventStream().listen((event) {
       if (!_isRunning || !mounted) return;
+      final rawTiltX = event.x.abs() < _tiltDeadZone ? 0.0 : event.x;
+      _smoothedTiltX =
+          (_smoothedTiltX * (1 - _tiltSmoothing)) +
+          (rawTiltX * _tiltSmoothing);
+      final step = (-_smoothedTiltX * _tiltSensitivity).clamp(
+        -_maxTiltStep,
+        _maxTiltStep,
+      ).toDouble();
       setState(() {
-        _basketX = (_basketX - event.x * 0.018).clamp(0.08, 0.92);
+        _basketX = (_basketX + step).clamp(0.08, 0.92).toDouble();
       });
     });
   }
@@ -119,6 +133,7 @@ class _GamePageState extends State<GamePage> {
     setState(() {
       _foods.clear();
       _basketX = 0.5;
+      _smoothedTiltX = 0;
       _score = 0;
       _timeLeft = 45;
       _tick = 0;

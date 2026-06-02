@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/database_service.dart';
+import 'package:smart_meal_ta/core/services/database_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -13,6 +13,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final DatabaseService _dbService = DatabaseService();
+  bool _obscurePassword = true;
 
   // Regex untuk validasi Email
   bool _isValidEmail(String email) {
@@ -104,13 +105,23 @@ class _RegisterPageState extends State<RegisterPage> {
             const SizedBox(height: 20),
             TextField(
               controller: _passwordController,
-              obscureText: true,
+              obscureText: _obscurePassword,
               decoration: InputDecoration(
                 labelText: "Password",
                 filled: true,
                 fillColor: Colors.grey.shade100,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
                 prefixIcon: const Icon(Icons.lock),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() => _obscurePassword = !_obscurePassword);
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 40),

@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/meal.dart';
-import '../models/nutrition_chat_message.dart';
-import '../models/nutrition_insight.dart';
-import '../models/nutrition_profile.dart';
-import '../services/ai_service.dart';
-import '../services/auth_service.dart';
-import '../services/meal_storage_service.dart';
-import '../services/nutrition_ml_service.dart';
+import 'package:smart_meal_ta/shared/models/meal.dart';
+import 'package:smart_meal_ta/shared/models/nutrition_chat_message.dart';
+import 'package:smart_meal_ta/shared/models/nutrition_insight.dart';
+import 'package:smart_meal_ta/shared/models/nutrition_profile.dart';
+import 'package:smart_meal_ta/core/services/ai_service.dart';
+import 'package:smart_meal_ta/core/services/auth_service.dart';
+import 'package:smart_meal_ta/core/services/meal_storage_service.dart';
+import 'package:smart_meal_ta/core/services/nutrition_ml_service.dart';
 
 class RecommendationProvider with ChangeNotifier {
   static const _profileKey = 'nutrition_assistant_profile';

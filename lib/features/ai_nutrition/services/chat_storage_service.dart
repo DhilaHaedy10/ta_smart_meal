@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../services/auth_service.dart';
+import 'package:smart_meal_ta/core/services/auth_service.dart';
 
 class ChatStorageService {
   static const _key = 'ai_chat_history';

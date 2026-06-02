@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../../services/meal_storage_service.dart';
-import '../../../services/nutrition_ml_service.dart';
-import '../../../models/nutrition_profile.dart';
-import '../services/ml_service.dart';
+import 'package:smart_meal_ta/core/services/meal_storage_service.dart';
+import 'package:smart_meal_ta/core/services/nutrition_ml_service.dart';
+import 'package:smart_meal_ta/shared/models/nutrition_profile.dart';
+import 'package:smart_meal_ta/features/ai_nutrition/services/ml_service.dart';
 
 class AiNutritionProvider extends ChangeNotifier {
   Map<String, dynamic>? analysis;

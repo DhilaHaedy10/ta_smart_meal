@@ -7,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:async';
-import '../models/meal.dart';
-import '../services/meal_storage_service.dart';
+import 'package:smart_meal_ta/shared/models/meal.dart';
+import 'package:smart_meal_ta/core/services/meal_storage_service.dart';
 
 class MealPlannerPage extends StatefulWidget {
   const MealPlannerPage({super.key});

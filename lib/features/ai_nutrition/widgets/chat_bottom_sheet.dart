@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../services/chat_storage_service.dart';
-import '../services/ml_service.dart';
+import 'package:smart_meal_ta/features/ai_nutrition/services/chat_storage_service.dart';
+import 'package:smart_meal_ta/features/ai_nutrition/services/ml_service.dart';
 
 void showChatBottomSheet(BuildContext context) {
   showModalBottomSheet(
