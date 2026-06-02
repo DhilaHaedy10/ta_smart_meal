@@ -25,7 +25,7 @@ dependencies:
   flutter_secure_storage: ^9.0.0
 
   # --- Networking & AI ---
-  # Digunakan di core/services/api_service.dart dan core/services/ai_service.dart
+  # Digunakan di core/services/ai_service.dart dan beberapa fitur yang memanggil API
   http: ^0.13.3
   dio: ^5.4.1
   # yey# Library LLM Gemini
@@ -44,7 +44,7 @@ dependencies:
   flutter_local_notifications: ^17.0.0
 
   # --- Sensors ---
-  # Digunakan di core/services/sensor_service.dart (Shake/Accelerometer)
+  # Digunakan di fitur game dan meal planner (Shake/Accelerometer)
   sensors_plus: ^4.0.2
 
   # --- Utilities & Configuration ---
