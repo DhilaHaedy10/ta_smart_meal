@@ -9,6 +9,7 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:async';
 import 'package:smart_meal_ta/shared/models/meal.dart';
 import 'package:smart_meal_ta/core/services/meal_storage_service.dart';
+// sensors_plus masih dipakai oleh _SearchWidget (shake to random)
 
 class MealPlannerPage extends StatefulWidget {
   const MealPlannerPage({super.key});
@@ -24,10 +25,6 @@ class _MealPlannerPageState extends State<MealPlannerPage> {
   String _currentCurrency = 'IDR';
   String _selectedTimeZone = 'WIB';
   double _exchangeRate = 1.0;
-  bool _tiltNavigationEnabled = false;
-  StreamSubscription<GyroscopeEvent>? _tiltSubscription;
-  StreamSubscription<AccelerometerEvent>? _tiltPositionSubscription;
-  DateTime _lastTiltAt = DateTime.fromMillisecondsSinceEpoch(0);
 
   final MealStorageService _mealStorage = MealStorageService();
   Map<String, Map<String, dynamic>> _savedMealsStore = {};
@@ -44,8 +41,6 @@ class _MealPlannerPageState extends State<MealPlannerPage> {
 
   @override
   void dispose() {
-    _tiltSubscription?.cancel();
-    _tiltPositionSubscription?.cancel();
     super.dispose();
   }
 
@@ -196,50 +191,6 @@ class _MealPlannerPageState extends State<MealPlannerPage> {
   void _changeWeek(int delta) {
     _weekOffset += delta;
     _loadWeekData();
-  }
-
-  void _toggleTiltNavigation() {
-    setState(() => _tiltNavigationEnabled = !_tiltNavigationEnabled);
-
-    if (_tiltNavigationEnabled) {
-      _tiltSubscription ??= gyroscopeEventStream().listen(_handleTilt);
-      _tiltPositionSubscription ??=
-          accelerometerEventStream().listen(_handleTiltPosition);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Tilt navigation aktif")),
-      );
-    } else {
-      _tiltSubscription?.cancel();
-      _tiltSubscription = null;
-      _tiltPositionSubscription?.cancel();
-      _tiltPositionSubscription = null;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Tilt navigation nonaktif")),
-      );
-    }
-  }
-
-  void _handleTilt(GyroscopeEvent event) {
-    if (!_tiltNavigationEnabled || _isLoading) return;
-
-    final canTiltAgain = DateTime.now().difference(_lastTiltAt) >
-        const Duration(milliseconds: 900);
-    final strongestTurn = event.y.abs() >= event.x.abs() ? event.y : -event.x;
-    if (!canTiltAgain || strongestTurn.abs() < 1.1) return;
-
-    _lastTiltAt = DateTime.now();
-    _changeWeek(strongestTurn > 0 ? -1 : 1);
-  }
-
-  void _handleTiltPosition(AccelerometerEvent event) {
-    if (!_tiltNavigationEnabled || _isLoading) return;
-
-    final canTiltAgain = DateTime.now().difference(_lastTiltAt) >
-        const Duration(milliseconds: 900);
-    if (!canTiltAgain || event.x.abs() < 5.5) return;
-
-    _lastTiltAt = DateTime.now();
-    _changeWeek(event.x > 0 ? -1 : 1);
   }
 
   void _addSavedMeal(int dayIndex, String type, Meal meal) {
